@@ -17,6 +17,7 @@ use Psr\Http\Message\RequestInterface;
 use Sentry\Client;
 use Sentry\ClientBuilder;
 use Sentry\Event;
+use Sentry\HttpClient\GzipEncoderPlugin;
 use Sentry\Integration\ErrorListenerIntegration;
 use Sentry\Integration\ExceptionListenerIntegration;
 use Sentry\Integration\FatalErrorListenerIntegration;
@@ -266,17 +267,17 @@ final class ClientBuilderTest extends TestCase
         $builder = new ClientBuilder($options);
         $builder->getClient();
 
-        $decoderPluginFound = false;
+        $encoderPluginFound = false;
 
         foreach ($this->getObjectAttribute($builder, 'httpClientPlugins') as $plugin) {
-            if ($plugin instanceof Plugin\DecoderPlugin) {
-                $decoderPluginFound = true;
+            if ($plugin instanceof GzipEncoderPlugin) {
+                $encoderPluginFound = true;
 
                 break;
             }
         }
 
-        $this->assertEquals($enabled, $decoderPluginFound);
+        $this->assertEquals($enabled, $encoderPluginFound);
     }
 
     public function getClientTogglesCompressionPluginInHttpClientDataProvider(): array
